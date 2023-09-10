@@ -15,8 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<sampleDbContext>(options => 
     options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.28-mariadb")));
 
-builder.Services.AddDbContext<SampleIdentityContext>(options => 
-options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.28-mariadb")));
+// builder.Services.AddDbContext<SampleIdentityContext>(options => 
+// options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.28-mariadb")));
 
 builder.Services.AddIdentity<AppUser, AppRole>(option => {
         option.SignIn.RequireConfirmedAccount = false;
