@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentitySample.Entities;
 using IdentitySample.Identity;
+using IdentitySample.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -58,6 +59,62 @@ namespace IdentitySample.Controllers
             }
 
             return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel registration)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var user = new AppUser
+                    {
+                        Firstname = registration.FirstName,               
+                        MiddleName = registration.MiddleName,
+                        LastName = registration.LastName,
+                        Contact = registration.ContactNumber,
+                        UserType = "Admin".ToString(),
+                        Email = registration.Email,
+
+                        UserName = registration.UserName,
+                        Password = registration.Password
+                    };
+
+                    var result = await _usrMngr.CreateAsync(user, registration.Password);
+
+                    if (result.Succeeded)
+                    {
+                        if (user.UserType == "Student")
+                            _usrMngr.AddToRoleAsync(user, "Student").Wait();
+                        else
+                            _usrMngr.AddToRoleAsync(user, "Admin").Wait();
+
+                        return RedirectToAction("Login", "Account");
+                    }
+                    else
+                    {
+                        foreach (var item in result.Errors)
+                        {
+                            if (item.Code == "DuplicateUserName")
+                                ModelState.AddModelError("DuplicateUserName", "Username already taken");
+                            if (item.Code == "DuplicateEmail")
+                                ModelState.AddModelError("DuplicateEmail", "Email already Registered");
+
+                        }
+                        View(registration);
+                    }
+
+
+                }
+                return View(registration);
+            }
+            catch (Exception )
+            {
+                return View(registration);
+            }
         }
 
     
