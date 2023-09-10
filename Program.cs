@@ -1,15 +1,22 @@
 using IdentitySample.Entities;
 using IdentitySample.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// var connectionString = builder.Configuration.GetConnectionString("SampleIdentityContextConnection");builder.Services.AddDbContext<SampleIdentityContext>(options =>
+//     options.UseSqlServer(connectionString));builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//     .AddEntityFrameworkStores<SampleIdentityContext>();
+
+
 //added DBContext
 builder.Services.AddDbContext<sampleDbContext>(options => 
-    options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.21-mariadb")));
+    options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.28-mariadb")));
 
 builder.Services.AddDbContext<SampleIdentityContext>(options => 
-options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.21-mariadb")));
+options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.28-mariadb")));
 
 builder.Services.AddIdentity<AppUser, AppRole>(option => {
         option.SignIn.RequireConfirmedAccount = false;
@@ -23,6 +30,11 @@ builder.Services.AddIdentity<AppUser, AppRole>(option => {
         option.Password.RequireDigit = false;
     })
     .AddEntityFrameworkStores<SampleIdentityContext>();
+
+    builder.Services.ConfigureApplicationCookie(option => {
+        option.LoginPath = "/Account/Login";
+        option.AccessDeniedPath = "/Account/Login";
+    });
 
 builder.Services.AddControllersWithViews();
 
@@ -40,7 +52,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
