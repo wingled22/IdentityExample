@@ -1,6 +1,13 @@
+//using IdentitySample.Entities;
+using IdentitySample.Entities;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//added DBContext
+builder.Services.AddDbContext<sampleDbContext>(options => 
+    options.UseMySql("server=localhost;database=sampleDb;user=root", Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.4.21-mariadb")));
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
